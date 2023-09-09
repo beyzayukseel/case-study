@@ -19,11 +19,6 @@ public class AirportController {
         return ResponseEntity.ok(airportService.getAirportById(id));
     }
 
-    @GetMapping("/iataCode")
-    public ResponseEntity<Airport> getAirportByIataCode(@RequestParam String iataCode) {
-        return ResponseEntity.ok(airportService.getAirportByIataCode(iataCode));
-    }
-
     @PostMapping
     public ResponseEntity<String> saveAirport(@RequestBody Airport airport) {
         airportService.createAirport(airport);

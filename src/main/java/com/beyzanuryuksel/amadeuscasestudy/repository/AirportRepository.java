@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface AirportRepository extends JpaRepository<Airport, Long> {
 
     @Query
-    Optional<Airport> findByIataCode(String iataCode);
+    List<Airport> findAllByCity(String cityName);
 }

@@ -20,9 +20,12 @@ public class AirportService {
                 () -> new BusinessLogicException.NotFoundException("Airport not found"));
     }
 
-    public Airport getAirportByIataCode(String iataCode) {
-        return airportRepository.findByIataCode(iataCode).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Airport with that iata code could not found!"));
+    public Boolean checkAiportExistence(Long id) {
+        return airportRepository.existsById(id);
+    }
+
+    public List<Airport> getAirportByCityName(String cityName) {
+        return airportRepository.findAllByCity(cityName);
     }
 
     public Airport createAirport(Airport airport) {
@@ -49,6 +52,4 @@ public class AirportService {
             airportRepository.save(getExistingAirport);
         }
     }
-
-
 }

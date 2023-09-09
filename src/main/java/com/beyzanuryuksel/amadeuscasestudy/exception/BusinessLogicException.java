@@ -26,4 +26,10 @@ public class BusinessLogicException {
             super(message);
         }
     }
+
+    public static class NotValidDateEnteredException extends BaseException {
+        public NotValidDateEnteredException(String message) {
+            super(message);
+        }
+    }
 }

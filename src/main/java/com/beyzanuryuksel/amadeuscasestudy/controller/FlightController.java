@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/flight")
@@ -22,6 +23,17 @@ import java.util.List;
 public class FlightController {
 
     private final FlightService flightService;
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Flight>> getFlightsForEnteredParameters(@RequestParam Long departureAirportId,
+                                                                               @RequestParam Long arrivalAirportId,
+                                                                               @RequestParam LocalDateTime departureDatetime,
+                                                                               @RequestParam(required = false) Optional<LocalDateTime> arrivalDateTime) {
+
+        return ResponseEntity.ok(flightService.getAllFlightsByCriteria(
+                departureAirportId, arrivalAirportId, departureDatetime, arrivalDateTime));
+
+    }
 
     @GetMapping
     public ResponseEntity<Flight> getFlightById(@RequestParam Long id) {
