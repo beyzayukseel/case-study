@@ -3,8 +3,8 @@ package com.beyzanuryuksel.amadeuscasestudy.service;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Role;
 import com.beyzanuryuksel.amadeuscasestudy.entity.RoleType;
 import com.beyzanuryuksel.amadeuscasestudy.entity.User;
+import com.beyzanuryuksel.amadeuscasestudy.model.CreateUserDto;
 import com.beyzanuryuksel.amadeuscasestudy.model.LoginRequest;
-import com.beyzanuryuksel.amadeuscasestudy.model.UserDto;
 import com.beyzanuryuksel.amadeuscasestudy.model.UserResponse;
 import com.beyzanuryuksel.amadeuscasestudy.repository.RoleRepository;
 import com.beyzanuryuksel.amadeuscasestudy.security.JwtUtils;
@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -29,12 +31,12 @@ import java.util.stream.Collectors;
 public class UserDetailsImpl {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
-    private final RoleRepository roleService;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
 
 
-    public UserResponse login(LoginRequest loginRequest) {
+    public UserResponse login(@RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
@@ -54,16 +56,15 @@ public class UserDetailsImpl {
         return (new UserResponse(jwt,
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles.stream().toList()));
     }
 
 
-    public User register(UserDto createUserDto) {
+    public User register(CreateUserDto createUserDto) {
 
         User user = new User();
         user.setIdentifyNumber(createUserDto.getIdentifyNumber());
         user.setPassword(encoder.encode(createUserDto.getPassword()));
-        System.out.println("aa0" + user.getPassword());
         user.setEmail(createUserDto.getEmail());
         user.setUsername(createUserDto.getName());
         user.setIsBlocked(Boolean.FALSE);
@@ -73,19 +74,19 @@ public class UserDetailsImpl {
 
 
         if (strRoles == null) {
-            Role userRole = roleService.findByName(RoleType.ROLE_CUSTOMER.toString());
+            Role userRole = roleRepository.findByName(RoleType.USER.toString());
             roles.add(userRole);
 
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
-                    case "admin":
-                        Role adminRole = roleService.findByName(RoleType.ROLE_ADMIN.toString());
+                    case "ADMIN":
+                        Role adminRole = roleRepository.findByName(RoleType.ADMIN.toString());
                         roles.add(adminRole);
                         break;
 
                     default:
-                        Role userRole = roleService.findByName(RoleType.ROLE_CUSTOMER.toString());
+                        Role userRole = roleRepository.findByName(RoleType.USER.toString());
                         roles.add(userRole);
                 }
             });
