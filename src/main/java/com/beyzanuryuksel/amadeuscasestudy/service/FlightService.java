@@ -1,6 +1,7 @@
 package com.beyzanuryuksel.amadeuscasestudy.service;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
+import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
 import com.beyzanuryuksel.amadeuscasestudy.repository.FlightRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,38 +19,38 @@ public class FlightService {
 
     private final FlightRepository flightRepository;
 
-    Flight getFlightById(Long id) throws Exception {
+    public Flight getFlightById(Long id) {
         return flightRepository.findById(id).orElseThrow(
-                () -> new Exception("Flight not found"));
+                () -> new BusinessLogicException.NotFoundException("Flight not found"));
     }
 
-    Flight getFlightByFlightNumber(String flightNumber) throws Exception {
+    public Flight getFlightByFlightNumber(String flightNumber) {
         return flightRepository.findByFlightNumber(flightNumber).orElseThrow(
-                () -> new Exception("Flight not found"));
+                () -> new BusinessLogicException.NotFoundException("Flight not found"));
     }
 
-    Flight createFlight(Flight flight) {
+    public Flight createFlight(Flight flight) {
         return flightRepository.save(flight);
     }
 
-    Flight updateFlight(Flight flight) throws Exception {
+    public Flight updateFlight(Flight flight) {
         Flight getExistingFlight = flightRepository.findById(flight.getId()).orElseThrow(
-                () -> new Exception("Flight not found"));
+                () -> new BusinessLogicException.NotFoundException("Flight could not found!"));
         if (getExistingFlight == null) {
             return null;
         } else return flightRepository.save(flight);
     }
 
-    void softDeleteFlight(Long id) throws Exception {
+    public void softDeleteFlight(Long id) {
         Flight getExistingFlight = flightRepository.findById(id).orElseThrow(
-                () -> new Exception("Flight not found"));
+                () -> new BusinessLogicException.NotFoundException("Flight could not found!"));
         if (getExistingFlight != null) {
             getExistingFlight.setIsActive(false);
             flightRepository.save(getExistingFlight);
         }
     }
 
-    List<Flight> getAllFlights() {
+    public List<Flight> getAllFlights() {
         return flightRepository.findAll();
     }
 }

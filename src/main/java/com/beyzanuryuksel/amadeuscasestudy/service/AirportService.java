@@ -2,6 +2,7 @@ package com.beyzanuryuksel.amadeuscasestudy.service;
 
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Airport;
+import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
 import com.beyzanuryuksel.amadeuscasestudy.repository.AirportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,21 +15,21 @@ public class AirportService {
 
     private final AirportRepository airportRepository;
 
-    Airport getAirportById(Long id) throws Exception {
+    public Airport getAirportById(Long id) {
         return airportRepository.findById(id).orElseThrow(
-                () -> new Exception("Airport not found"));
+                () -> new BusinessLogicException.NotFoundException("Airport not found"));
     }
 
-    Airport getAirportByIataCode(String iataCode) throws Exception {
+    public Airport getAirportByIataCode(String iataCode) {
         return airportRepository.findByIataCode(iataCode).orElseThrow(
-                () -> new Exception("Airport not found"));
+                () -> new BusinessLogicException.NotFoundException("Airport with that iata code could not found!"));
     }
 
-    Airport createAirport(Airport airport) {
+    public Airport createAirport(Airport airport) {
         return airportRepository.save(airport);
     }
 
-    Airport updateAirport(Airport airport) throws Exception {
+    public Airport updateAirport(Airport airport) throws Exception {
         Airport getExistingAirport = airportRepository.findById(airport.getId()).orElseThrow(
                 () -> new Exception("Airport not found"));
         if (getExistingAirport == null) {
@@ -36,11 +37,11 @@ public class AirportService {
         } else return airportRepository.save(airport);
     }
 
-    List<Airport> getAllAirports() {
+    public List<Airport> getAllAirports() {
         return airportRepository.findAll();
     }
 
-    void softDeleteAirport(Long id) throws Exception {
+    public void softDeleteAirport(Long id) throws Exception {
         Airport getExistingAirport = airportRepository.findById(id).orElseThrow(
                 () -> new Exception("Airport not found"));
         if (getExistingAirport != null) {

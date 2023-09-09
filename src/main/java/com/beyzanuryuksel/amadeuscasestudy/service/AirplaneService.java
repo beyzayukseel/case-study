@@ -1,6 +1,7 @@
 package com.beyzanuryuksel.amadeuscasestudy.service;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Airplane;
+import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
 import com.beyzanuryuksel.amadeuscasestudy.repository.AirplaneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,37 +16,28 @@ public class AirplaneService {
 
     private final AirplaneRepository airplaneRepository;
 
-    Airplane getAirplaneById(Long id) throws Exception {
+    public Airplane getAirplaneById(Long id) {
         return airplaneRepository.findById(id).orElseThrow(
-                () -> new Exception("Customer not found"));
+                () -> new BusinessLogicException.NotFoundException("Airplane not found"));
     }
 
-    List<Airplane> getAirplaneByType(String type) {
+    public List<Airplane> getAirplaneByType(String type) {
         return airplaneRepository.getAirplanesByType(type);
     }
 
-    Airplane createAirplane(Airplane airplane) {
+    public Airplane createAirplane(Airplane airplane) {
         return airplaneRepository.save(airplane);
     }
 
-    Airplane updateAirplane(Airplane airplane) throws Exception {
+    public Airplane updateAirplane(Airplane airplane) {
         Airplane getExistingAirplane = airplaneRepository.findById(airplane.getId()).orElseThrow(
-                () -> new Exception("Customer not found"));
+                () -> new BusinessLogicException.NotFoundException("Airplane could not found!"));
         if (getExistingAirplane == null) {
             return null;
         } else return airplaneRepository.save(airplane);
     }
 
-    void softDeleteAirplane(Long id) throws Exception {
-        Airplane getExistingAirplane = airplaneRepository.findById(id).orElseThrow(
-                () -> new Exception("Customer not found"));
-        if (getExistingAirplane != null) {
-            getExistingAirplane.setIsActive(false);
-            airplaneRepository.save(getExistingAirplane);
-        }
-    }
-
-    List<Airplane> getAllAirplanes() {
+    public List<Airplane> getAllAirplanes() {
         return airplaneRepository.findAll();
     }
 }
