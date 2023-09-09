@@ -15,11 +15,6 @@ spring:
         show_sql: true
         format_sql: true
         globally_quoted_identifiers: true
-
-# openapi configs
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /api-docs
-
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
