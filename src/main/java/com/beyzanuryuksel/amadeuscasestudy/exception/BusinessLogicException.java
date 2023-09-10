@@ -9,20 +9,20 @@ public class BusinessLogicException {
         }
     }
 
-    public static class AlreadyDeletedException extends BaseException {
-        public AlreadyDeletedException(String message) {
-            super(message);
-        }
-    }
-
     public static class CanNotDeletedException extends BaseException {
         public CanNotDeletedException(String message) {
             super(message);
         }
     }
 
-    public static class NotValidException extends BaseException {
-        public NotValidException(String message) {
+    public static class NotUpdatedException extends BaseException {
+        public NotUpdatedException(String message) {
+            super(message);
+        }
+    }
+
+    public static class NotValidDateEnteredException extends BaseException {
+        public NotValidDateEnteredException(String message) {
             super(message);
         }
     }
