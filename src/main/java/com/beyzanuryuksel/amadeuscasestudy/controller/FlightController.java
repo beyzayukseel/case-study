@@ -1,7 +1,8 @@
 package com.beyzanuryuksel.amadeuscasestudy.controller;
 
-import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
+import com.beyzanuryuksel.amadeuscasestudy.model.CreateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
+import com.beyzanuryuksel.amadeuscasestudy.model.UpdateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,25 +35,23 @@ public class FlightController {
     }
 
     @GetMapping
-    public ResponseEntity<Flight> getFlightById(@RequestParam Long id) {
+    public ResponseEntity<FlightResponse> getFlightById(@RequestParam Long id) {
         return ResponseEntity.ok(flightService.getFlightById(id));
     }
 
-    @GetMapping("/flightNumber")
-    public ResponseEntity<Flight> getFlightByFlightNumber(@RequestParam String flightNumber) {
+    @GetMapping("/number")
+    public ResponseEntity<FlightResponse> getFlightByFlightNumber(@RequestParam String flightNumber) {
         return ResponseEntity.ok(flightService.getFlightByFlightNumber(flightNumber));
     }
 
     @PostMapping
-    public ResponseEntity<String> saveFlight(@RequestBody Flight flight) {
-        flightService.createFlight(flight);
-        return ResponseEntity.ok("Flight saved successfully!");
+    public ResponseEntity<String> saveFlight(@RequestBody CreateFlightRequest flight) {
+        return ResponseEntity.ok(flightService.createFlight(flight));
     }
 
     @PutMapping
-    public ResponseEntity<String> updateFlight(@RequestBody Flight flight) {
-        flightService.updateFlight(flight);
-        return ResponseEntity.ok("Flight updated successfully!");
+    public ResponseEntity<String> updateFlight(@RequestBody UpdateFlightRequest flight) {
+        return ResponseEntity.ok(flightService.updateFlight(flight));
     }
 
     @DeleteMapping
@@ -62,7 +61,7 @@ public class FlightController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Flight>> getFlightStatus() {
+    public ResponseEntity<List<FlightResponse>> getFlightStatus() {
         return ResponseEntity.ok(flightService.getAllFlights());
     }
 

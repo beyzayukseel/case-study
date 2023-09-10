@@ -1,10 +1,7 @@
 package com.beyzanuryuksel.amadeuscasestudy.converter;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
-import com.beyzanuryuksel.amadeuscasestudy.model.AirplaneResponse;
-import com.beyzanuryuksel.amadeuscasestudy.model.AirportResponse;
-import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
-import com.beyzanuryuksel.amadeuscasestudy.model.ScheduleResponse;
+import com.beyzanuryuksel.amadeuscasestudy.model.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -46,4 +43,5 @@ public class FlightConverter {
 
         return flightResponse;
     }
+
 }

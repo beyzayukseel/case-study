@@ -1,16 +1,18 @@
 package com.beyzanuryuksel.amadeuscasestudy.service;
 
 import com.beyzanuryuksel.amadeuscasestudy.converter.FlightConverter;
+import com.beyzanuryuksel.amadeuscasestudy.entity.Airplane;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Airport;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Schedule;
 import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
+import com.beyzanuryuksel.amadeuscasestudy.model.CreateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
+import com.beyzanuryuksel.amadeuscasestudy.model.UpdateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.repository.FlightRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,6 +31,8 @@ public class FlightService {
 
     private final AirportService airportService;
 
+    private final AirplaneService airplaneService;
+
     private final ScheduleService scheduleService;
 
     private final FlightConverter flightConverter;
@@ -39,7 +43,7 @@ public class FlightService {
                                                         String departureTime, Optional<String> returnTime) {
 
         LocalDateTime departureLocalDatetime = LocalDateTime.parse(departureTime, formatter);
-        Optional<LocalDateTime> returnDepartureLocalDatetime = null;
+        Optional<LocalDateTime> returnDepartureLocalDatetime = Optional.empty();
 
         if (returnTime.isPresent()) returnDepartureLocalDatetime = Optional.of(LocalDateTime.parse(returnTime.get(), formatter));
 
@@ -84,38 +88,66 @@ public class FlightService {
         return airportService.findByIataCode(iataCode);
     }
 
-    public Flight getFlightById(Long id) {
-        return flightRepository.findById(id).orElseThrow(
+    public FlightResponse getFlightById(Long id) {
+        Flight flight =  flightRepository.findById(id).orElseThrow(
                 () -> new BusinessLogicException.NotFoundException("Flight not found"));
+
+        return flightConverter.convertToFlightResponseDto(flight);
     }
 
-    public Flight getFlightByFlightNumber(String flightNumber) {
-        return flightRepository.findByFlightNumber(flightNumber).orElseThrow(
+    public FlightResponse getFlightByFlightNumber(String flightNumber) {
+        Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
                 () -> new BusinessLogicException.NotFoundException("Flight not found"));
+        return flightConverter.convertToFlightResponseDto(flight);
     }
 
-    public Flight createFlight(Flight flight) {
-        return flightRepository.save(flight);
+    public String createFlight(CreateFlightRequest flight) {
+        Airplane airplane = airplaneService.getAirplaneById(flight.getAirplaneId());
+        Schedule schedule = scheduleService.getScheduleById(flight.getScheduleId());
+
+        Flight flightEntity = new Flight();
+        flightEntity.setFlightNumber(flight.getFlightNumber());
+        flightEntity.setIsActive(flight.getIsActive());
+        flightEntity.setAmount(flight.getAmount());
+        flightEntity.setCurrency(flight.getCurrency());
+        flightEntity.setAirplane(airplane);
+        flightEntity.setSchedule(schedule);
+        flightRepository.save(flightEntity);
+
+        return "Flight successfully created!";
     }
 
-    public Flight updateFlight(Flight flight) {
+    public String updateFlight(UpdateFlightRequest flight) {
         Flight getExistingFlight = flightRepository.findById(flight.getId()).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Flight could not found!"));
+                () -> new BusinessLogicException.NotUpdatedException("Flight could not found!"));
         if (getExistingFlight == null) {
-            return null;
-        } else return flightRepository.save(flight);
-    }
+            return "Flight cant be updated!";
+        } else {
+            Airplane airplane = airplaneService.getAirplaneById(flight.getAirplaneId());
+            Schedule schedule = scheduleService.getScheduleById(flight.getScheduleId());
 
+            Flight flightEntity = new Flight();
+            flightEntity.setId(flight.getId());
+            flightEntity.setFlightNumber(flight.getFlightNumber());
+            flightEntity.setIsActive(flight.getIsActive());
+            flightEntity.setAmount(flight.getAmount());
+            flightEntity.setCurrency(flight.getCurrency());
+            flightEntity.setAirplane(airplane);
+            flightEntity.setSchedule(schedule);
+            flightRepository.save(flightEntity);
+            return "Flight updated successfully!";
+        }
+    }
     public void softDeleteFlight(Long id) {
         Flight getExistingFlight = flightRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Flight could not found!"));
+                () -> new BusinessLogicException.CanNotDeletedException("Flight can not deleted!"));
         if (getExistingFlight != null) {
             getExistingFlight.setIsActive(false);
             flightRepository.save(getExistingFlight);
         }
     }
 
-    public List<Flight> getAllFlights() {
-        return flightRepository.findAll();
+    public List<FlightResponse> getAllFlights() {
+        return flightRepository.findAll().stream().map(flightConverter::convertToFlightResponseDto).toList();
     }
 }

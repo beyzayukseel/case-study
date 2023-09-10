@@ -1,6 +1,9 @@
 package com.beyzanuryuksel.amadeuscasestudy.controller;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Schedule;
+import com.beyzanuryuksel.amadeuscasestudy.model.CreateSchedule;
+import com.beyzanuryuksel.amadeuscasestudy.model.ScheduleResponse;
+import com.beyzanuryuksel.amadeuscasestudy.model.UpdateSchedule;
 import com.beyzanuryuksel.amadeuscasestudy.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,32 +35,30 @@ public class ScheduleController {
     }
 
     @GetMapping("/departure/{departureAirportId}")
-    public ResponseEntity<List<Schedule>> getScheduleByDepartureAirportId(@PathVariable Long departureAirportId) {
+    public ResponseEntity<List<ScheduleResponse>> getScheduleByDepartureAirportId(@PathVariable Long departureAirportId) {
         return ResponseEntity.ok(scheduleService.getSchedulesByDepartureAirportId(departureAirportId));
     }
 
     @GetMapping("/arrival/{arrivalAirportId}")
-    public ResponseEntity<List<Schedule>> getScheduleByArrivalAirportId(@PathVariable Long arrivalAirportId) {
+    public ResponseEntity<List<ScheduleResponse>> getScheduleByArrivalAirportId(@PathVariable Long arrivalAirportId) {
         return ResponseEntity.ok(scheduleService.getSchedulesBArrivalAirportId(arrivalAirportId));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Schedule>> getAllSchedules() {
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
         return ResponseEntity.ok(scheduleService.getAllSchedules());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<String> saveSchedule(@RequestBody Schedule schedule) {
-        scheduleService.createSchedule(schedule);
-        return ResponseEntity.ok("Schedule saved successfully!");
+    public ResponseEntity<String> saveSchedule(@RequestBody CreateSchedule schedule) {
+        return ResponseEntity.ok(scheduleService.createSchedule(schedule));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
-    public ResponseEntity<String> updateSchedule(@RequestBody Schedule schedule) {
-        scheduleService.updateSchedule(schedule);
-        return ResponseEntity.ok("Schedule updated successfully!");
+    public ResponseEntity<String> updateSchedule(@RequestBody UpdateSchedule schedule) {
+        return ResponseEntity.ok(scheduleService.updateSchedule(schedule));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -68,7 +69,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/date")
-    public ResponseEntity<List<Schedule>> getAllSchedulesBetweenDates(@RequestParam LocalDateTime departureTimeFirst,
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedulesBetweenDates(@RequestParam LocalDateTime departureTimeFirst,
                                                                       @RequestParam LocalDateTime departureTimeSecond) {
         return ResponseEntity.ok(scheduleService.getSchedulesByDate(departureTimeFirst, departureTimeSecond));
     }
