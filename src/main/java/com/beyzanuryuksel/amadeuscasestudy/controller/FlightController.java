@@ -1,6 +1,7 @@
 package com.beyzanuryuksel.amadeuscasestudy.controller;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
+import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
 import com.beyzanuryuksel.amadeuscasestudy.service.FlightService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,13 +24,12 @@ public class FlightController {
     private final FlightService flightService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<Flight>> getFlightsForEnteredParameters(@RequestParam Long departureAirportId,
-                                                                               @RequestParam Long arrivalAirportId,
-                                                                               @RequestParam LocalDateTime departureDatetime,
-                                                                               @RequestParam(required = false) Optional<LocalDateTime> arrivalDateTime) {
-
+    public ResponseEntity<List<FlightResponse>> getAllFlightsByCriteria(@RequestParam String departureIataCode,
+                                                                        @RequestParam String arrivalIataCode,
+                                                                        @RequestParam String departureDatetime,
+                                                                        @RequestParam(required = false) Optional<String> arrivalDateTime) {
         return ResponseEntity.ok(flightService.getAllFlightsByCriteria(
-                departureAirportId, arrivalAirportId, departureDatetime, arrivalDateTime));
+                departureIataCode, arrivalIataCode, departureDatetime, arrivalDateTime));
 
     }
 

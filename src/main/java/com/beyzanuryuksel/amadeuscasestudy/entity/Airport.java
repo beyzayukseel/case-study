@@ -15,11 +15,18 @@ public class Airport {
 
     @Id
     private Long id;
+
     private String name;
+
     private String city;
+
     private String country;
+
     private String countryCode;
+
     private String iataCode;
+
     private String icaoCode;
+
     private Boolean isActive;
 }

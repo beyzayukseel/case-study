@@ -7,8 +7,8 @@ import com.beyzanuryuksel.amadeuscasestudy.repository.AirportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
-//get all scheduled airport by between dates
 @RequiredArgsConstructor
 @Service
 public class AirportService {
@@ -20,12 +20,8 @@ public class AirportService {
                 () -> new BusinessLogicException.NotFoundException("Airport not found"));
     }
 
-    public Boolean checkAiportExistence(Long id) {
-        return airportRepository.existsById(id);
-    }
-
-    public List<Airport> getAirportByCityName(String cityName) {
-        return airportRepository.findAllByCity(cityName);
+    public Optional<Airport> findByIataCode(String iataCode) {
+        return airportRepository.findByIataCode(iataCode);
     }
 
     public Airport createAirport(Airport airport) {

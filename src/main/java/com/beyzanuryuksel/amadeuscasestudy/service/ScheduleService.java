@@ -15,14 +15,6 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    public List<Schedule> getAllSchedulesByCriteria(Long departureAirportId, Long arrivalDepartureId, LocalDateTime departureTime,
-                                                    Optional<LocalDateTime> arrivalTime ) {
-
-        return scheduleRepository.getSchedulesByAirportIdForDepartureBetweenDates(departureAirportId, arrivalDepartureId, departureTime,
-                arrivalTime);
-
-    }
-
     public List<Schedule> getSchedulesByDepartureAirportId(Long id) {
         return scheduleRepository.findAllByDepartureAirportId(id);
     }

@@ -1,17 +1,23 @@
 package com.beyzanuryuksel.amadeuscasestudy.service;
 
+import com.beyzanuryuksel.amadeuscasestudy.converter.FlightConverter;
+import com.beyzanuryuksel.amadeuscasestudy.entity.Airport;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Flight;
 import com.beyzanuryuksel.amadeuscasestudy.entity.Schedule;
 import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
+import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
 import com.beyzanuryuksel.amadeuscasestudy.repository.FlightRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -25,40 +31,57 @@ public class FlightService {
 
     private final ScheduleService scheduleService;
 
-    public List<Flight> getAllFlightsByCriteria(Long departureAirportId, Long arrivalAirportId,
-                                                LocalDateTime departureTime, Optional<LocalDateTime> arrivalTime) {
+    private final FlightConverter flightConverter;
 
-        boolean checkDates = checkDepartureAndArrivalTime(departureTime, arrivalTime);
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public List<FlightResponse> getAllFlightsByCriteria(String departureIataCode, String arrivalIataCode,
+                                                        String departureTime, Optional<String> returnTime) {
+
+        LocalDateTime departureLocalDatetime = LocalDateTime.parse(departureTime, formatter);
+        Optional<LocalDateTime> returnDepartureLocalDatetime = null;
+
+        if (returnTime.isPresent()) returnDepartureLocalDatetime = Optional.of(LocalDateTime.parse(returnTime.get(), formatter));
+
+        boolean checkDates = checkDepartureAndArrivalTime(departureLocalDatetime, returnDepartureLocalDatetime);
 
         if (Boolean.FALSE.equals(checkDates)) throw new BusinessLogicException.NotValidDateEnteredException(
                 "The entered departure date time must be before than arrival date!");
 
-        boolean checkDepartureAirport = checkAirportExistence(departureAirportId);
-        boolean checkArrivalAirport = checkAirportExistence(arrivalAirportId);
+        Optional<Airport> departureAirport = findAirportByIataCode(departureIataCode);
+        Optional<Airport> arrivalAirport = findAirportByIataCode(arrivalIataCode);
 
-        if (Boolean.FALSE.equals(checkDepartureAirport) || Boolean.FALSE.equals(checkArrivalAirport)) throw new
+        if (departureAirport.isEmpty() || arrivalAirport.isEmpty()) throw new
                 BusinessLogicException.NotValidDateEnteredException(
                 "The entered departure date time must be before than arrival date!");
 
-        List<Schedule> getAllProperSchedules = scheduleService.getAllSchedulesByCriteria(departureAirportId,
-                arrivalAirportId, departureTime, arrivalTime);
+        List<Flight> getAllDepartureFlights = flightRepository.getAllByCriteria(departureAirport.get().getId(),
+                arrivalAirport.get().getId(), departureLocalDatetime);
+
+        List<Flight> getAllReturnFlightIfExist = new ArrayList<>();
+
+        if(returnTime.isPresent()) {
+            getAllReturnFlightIfExist = flightRepository.getAllByCriteria(arrivalAirport.get().getId(),
+                    departureAirport.get().getId(), returnDepartureLocalDatetime.get());
+        }
 
         List<Flight> flightList = new ArrayList<>();
 
-        getAllProperSchedules.forEach(schedule -> {
-            List<Flight> flights = flightRepository.findAllByScheduleId(schedule.getId());
-            flights.stream().map(flightList::add);
-        });
+        flightList.addAll(getAllDepartureFlights);
 
-        return flightList;
+        flightList.addAll(getAllReturnFlightIfExist);
+
+        return flightList.stream()
+                .map(flightConverter::convertToFlightResponseDto)
+                .collect(Collectors.toList());
     }
 
     private Boolean checkDepartureAndArrivalTime(LocalDateTime departureTime, Optional<LocalDateTime> arrivalTime) {
         return arrivalTime.map(departureTime::isBefore).orElse(true);
     }
 
-    private Boolean checkAirportExistence(Long id) {
-        return airportService.checkAiportExistence(id);
+    private Optional<Airport> findAirportByIataCode(String iataCode) {
+        return airportService.findByIataCode(iataCode);
     }
 
     public Flight getFlightById(Long id) {

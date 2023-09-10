@@ -5,7 +5,14 @@ import com.beyzanuryuksel.amadeuscasestudy.service.AirplaneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -31,12 +38,14 @@ public class AirplaneController {
         return ResponseEntity.ok(airplaneService.getAllAirplanes());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<String> saveAirplane(@RequestBody Airplane airplane) {
         airplaneService.createAirplane(airplane);
         return ResponseEntity.status(HttpStatus.CREATED).body("Airplane saved successfully!");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<String> updateAirplane(@RequestBody Airplane airplane) {
         airplaneService.updateAirplane(airplane);
