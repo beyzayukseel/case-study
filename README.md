@@ -101,5 +101,15 @@ For more info:
 [AMADEUS TRAVEL API FOR DEVELOPERS ](https://developers.amadeus.com/self-service/category/flights/api-doc/flight-offers-search/api-reference)
 
 
+#### Points For Improvement
+
+- Unit Test
+- Java Linter
+- Running on Docker
+
+
+
+
+
 
 
