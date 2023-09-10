@@ -10,19 +10,16 @@ import com.beyzanuryuksel.amadeuscasestudy.model.CreateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
 import com.beyzanuryuksel.amadeuscasestudy.model.UpdateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.repository.FlightRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FlightService {
@@ -37,7 +34,7 @@ public class FlightService {
 
     private final FlightConverter flightConverter;
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public List<FlightResponse> getAllFlightsByCriteria(String departureIataCode, String arrivalIataCode,
                                                         String departureTime, Optional<String> returnTime) {
@@ -77,7 +74,7 @@ public class FlightService {
 
         return flightList.stream()
                 .map(flightConverter::convertToFlightResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Boolean checkDepartureAndArrivalTime(LocalDateTime departureTime, Optional<LocalDateTime> arrivalTime) {
@@ -90,14 +87,20 @@ public class FlightService {
 
     public FlightResponse getFlightById(Long id) {
         Flight flight =  flightRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Flight not found"));
+                () -> {
+                    log.error("Flight could not find! Flight id: " + id);
+                    return new BusinessLogicException.NotFoundException("Flight not found");
+                });
 
         return flightConverter.convertToFlightResponseDto(flight);
     }
 
     public FlightResponse getFlightByFlightNumber(String flightNumber) {
         Flight flight = flightRepository.findByFlightNumber(flightNumber).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Flight not found"));
+                () -> {
+                    log.error("Flight could not find! Flight number: " + flightNumber);
+                    return new BusinessLogicException.NotFoundException("Flight not found");
+                });
         return flightConverter.convertToFlightResponseDto(flight);
     }
 
@@ -119,7 +122,10 @@ public class FlightService {
 
     public String updateFlight(UpdateFlightRequest flight) {
         Flight getExistingFlight = flightRepository.findById(flight.getId()).orElseThrow(
-                () -> new BusinessLogicException.NotUpdatedException("Flight could not found!"));
+                () -> {
+                    log.error("Flight could not find! Flight id: " + flight.getId());
+                    return new BusinessLogicException.NotUpdatedException("Flight could not found!");
+                });
         if (getExistingFlight == null) {
             return "Flight cant be updated!";
         } else {
@@ -140,7 +146,10 @@ public class FlightService {
     }
     public void softDeleteFlight(Long id) {
         Flight getExistingFlight = flightRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.CanNotDeletedException("Flight can not deleted!"));
+                () -> {
+                    log.error("Flight could not find! Flight id: " + id);
+                    return new BusinessLogicException.CanNotDeletedException("Flight can not deleted!");
+                });
         if (getExistingFlight != null) {
             getExistingFlight.setIsActive(false);
             flightRepository.save(getExistingFlight);

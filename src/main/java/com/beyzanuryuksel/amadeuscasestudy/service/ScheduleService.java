@@ -9,11 +9,12 @@ import com.beyzanuryuksel.amadeuscasestudy.model.ScheduleResponse;
 import com.beyzanuryuksel.amadeuscasestudy.model.UpdateSchedule;
 import com.beyzanuryuksel.amadeuscasestudy.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ScheduleService {
@@ -26,14 +27,14 @@ public class ScheduleService {
         return scheduleRepository.findAllByDepartureAirportId(id)
                 .stream()
                 .map(scheduleConverter::convertToScheduleResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<ScheduleResponse> getSchedulesBArrivalAirportId(Long id) {
         return scheduleRepository.findAllByArrivalAirportId(id)
                 .stream()
                 .map(scheduleConverter::convertToScheduleResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String createSchedule(CreateSchedule schedule) {
@@ -54,18 +55,22 @@ public class ScheduleService {
         return scheduleRepository.getSchedulesForDepartureBetweenDates(startDate, endDate)
                 .stream()
                 .map(scheduleConverter::convertToScheduleResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Schedule getScheduleById(Long id) {
         return scheduleRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Schedule not found"));
+                () -> {
+                    log.error("Schedule could not find! Schedule id: " + id);
+                    return new BusinessLogicException.NotFoundException("Schedule not found");
+                });
     }
 
     public String updateSchedule(UpdateSchedule schedule) {
         Schedule getExistingSchedule = scheduleRepository.findById(schedule.getId()).orElseThrow(
                 () -> new BusinessLogicException.NotUpdatedException("Schedule not found"));
         if (getExistingSchedule == null) {
+            log.error("Schedule could not find! Schedule id: " + schedule.getId());
             return "Schedule could not updated!";
         } else {
             Airport departureAirport = airportService.getAirportByIdForInternal(schedule.getDepartureAirportId());
@@ -78,7 +83,10 @@ public class ScheduleService {
 
     public void softDeleteSchedule(Long id) {
         Schedule getExistingSchedule = scheduleRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.CanNotDeletedException("Schedule not found"));
+                () -> {
+                    log.error("Schedule could not find! Schedule id: " + id);
+                    return new BusinessLogicException.CanNotDeletedException("Schedule not found");
+                });
         if (getExistingSchedule != null) {
             getExistingSchedule.setIsActive(false);
             scheduleRepository.save(getExistingSchedule);
@@ -89,6 +97,6 @@ public class ScheduleService {
         return scheduleRepository.findAll()
                 .stream()
                 .map(scheduleConverter::convertToScheduleResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -4,12 +4,12 @@ import com.beyzanuryuksel.amadeuscasestudy.entity.Airplane;
 import com.beyzanuryuksel.amadeuscasestudy.exception.BusinessLogicException;
 import com.beyzanuryuksel.amadeuscasestudy.repository.AirplaneRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-//get all airplanes by giving a schedule
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AirplaneService {
@@ -18,7 +18,10 @@ public class AirplaneService {
 
     public Airplane getAirplaneById(Long id) {
         return airplaneRepository.findById(id).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Airplane not found"));
+                () -> {
+                    log.error("Airplane could not find!");
+                    return new BusinessLogicException.NotFoundException("Airplane not found");
+                });
     }
 
     public List<Airplane> getAirplaneByType(String type) {
@@ -31,7 +34,10 @@ public class AirplaneService {
 
     public Airplane updateAirplane(Airplane airplane) {
         Airplane getExistingAirplane = airplaneRepository.findById(airplane.getId()).orElseThrow(
-                () -> new BusinessLogicException.NotFoundException("Airplane could not found!"));
+                () -> {
+                    log.error("Airplane could not find!");
+                    return new BusinessLogicException.NotFoundException("Airplane could not found!");
+                });
         if (getExistingAirplane == null) {
             return null;
         } else return airplaneRepository.save(airplane);
