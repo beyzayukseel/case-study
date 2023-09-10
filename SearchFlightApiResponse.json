@@ -1,0 +1,82 @@
+[
+  {
+    "id": 2,
+    "flightNumber": "US0037K4",
+    "airplane": {
+      "id": 2,
+      "type": "A2",
+      "seatCapacity": "200",
+      "isActive": true
+    },
+    "schedule": {
+      "id": 2,
+      "departureTime": "2023-09-10T13:00:00",
+      "arrivalTime": "2023-09-15T13:00:00",
+      "utcOffset": "2",
+      "departureAirport": {
+        "id": 2,
+        "name": "EN Airport",
+        "city": "London",
+        "country": "England",
+        "countryCode": "EN",
+        "iataCode": "EN00",
+        "icaoCode": "EN01",
+        "isActive": true
+      },
+      "arrivalAirport": {
+        "id": 1,
+        "name": "US Airport",
+        "city": "New York",
+        "country": "United States",
+        "countryCode": "US",
+        "iataCode": "US00",
+        "icaoCode": "US01",
+        "isActive": true
+      },
+      "isActive": true
+    },
+    "currency": "USD",
+    "amount": 120.0,
+    "isActive": null
+  },
+  {
+    "id": 1,
+    "flightNumber": "TR00KLA",
+    "airplane": {
+      "id": 1,
+      "type": "A1",
+      "seatCapacity": "100",
+      "isActive": true
+    },
+    "schedule": {
+      "id": 1,
+      "departureTime": "2023-09-11T10:00:00",
+      "arrivalTime": "2023-09-11T13:00:00",
+      "utcOffset": "-3",
+      "departureAirport": {
+        "id": 1,
+        "name": "US Airport",
+        "city": "New York",
+        "country": "United States",
+        "countryCode": "US",
+        "iataCode": "US00",
+        "icaoCode": "US01",
+        "isActive": true
+      },
+      "arrivalAirport": {
+        "id": 2,
+        "name": "EN Airport",
+        "city": "London",
+        "country": "England",
+        "countryCode": "EN",
+        "iataCode": "EN00",
+        "icaoCode": "EN01",
+        "isActive": true
+      },
+      "isActive": true
+    },
+    "currency": "USD",
+    "amount": 100.0,
+    "isActive": null
+  }
+]
