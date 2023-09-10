@@ -1,5 +1,6 @@
 package com.beyzanuryuksel.amadeuscasestudy.util;
 
+
 public class NumberGenerator {
 
     private static final String TICKER_NUMBER_PREFIX = "TR";
