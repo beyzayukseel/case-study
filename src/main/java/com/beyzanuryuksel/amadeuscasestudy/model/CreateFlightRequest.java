@@ -6,7 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CreateFlightRequest {
-    private String flightNumber;
 
     private Long airplaneId;
 

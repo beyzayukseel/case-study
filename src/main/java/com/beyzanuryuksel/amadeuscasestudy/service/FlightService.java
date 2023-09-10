@@ -10,6 +10,7 @@ import com.beyzanuryuksel.amadeuscasestudy.model.CreateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.model.FlightResponse;
 import com.beyzanuryuksel.amadeuscasestudy.model.UpdateFlightRequest;
 import com.beyzanuryuksel.amadeuscasestudy.repository.FlightRepository;
+import com.beyzanuryuksel.amadeuscasestudy.util.NumberGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,7 @@ public class FlightService {
         Schedule schedule = scheduleService.getScheduleById(flight.getScheduleId());
 
         Flight flightEntity = new Flight();
-        flightEntity.setFlightNumber(flight.getFlightNumber());
+        flightEntity.setFlightNumber(NumberGenerator.generateNumber());
         flightEntity.setIsActive(flight.getIsActive());
         flightEntity.setAmount(flight.getAmount());
         flightEntity.setCurrency(flight.getCurrency());
