@@ -1,6 +1,9 @@
 package com.beyzanuryuksel.amadeuscasestudy.controller;
 
 import com.beyzanuryuksel.amadeuscasestudy.entity.Airplane;
+import com.beyzanuryuksel.amadeuscasestudy.model.AirplaneResponse;
+import com.beyzanuryuksel.amadeuscasestudy.model.CreateAirplane;
+import com.beyzanuryuksel.amadeuscasestudy.model.UpdateAirplane;
 import com.beyzanuryuksel.amadeuscasestudy.service.AirplaneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,27 +32,25 @@ public class AirplaneController {
     }
 
     @GetMapping("/type")
-    public ResponseEntity<List<Airplane>> getAirplaneByType(@RequestParam String type) {
+    public ResponseEntity<List<AirplaneResponse>> getAirplaneByType(@RequestParam String type) {
         return ResponseEntity.ok(airplaneService.getAirplaneByType(type));
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Airplane>> getAllAirplanes() {
+    public ResponseEntity<List<AirplaneResponse>> getAllAirplanes() {
         return ResponseEntity.ok(airplaneService.getAllAirplanes());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<String> saveAirplane(@RequestBody Airplane airplane) {
-        airplaneService.createAirplane(airplane);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Airplane saved successfully!");
+    public ResponseEntity<String> saveAirplane(@RequestBody CreateAirplane airplane) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(airplaneService.createAirplane(airplane));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping
-    public ResponseEntity<String> updateAirplane(@RequestBody Airplane airplane) {
-        airplaneService.updateAirplane(airplane);
-        return ResponseEntity.status(HttpStatus.OK).body("Airplane updated successfully!");
+    public ResponseEntity<String> updateAirplane(@RequestBody UpdateAirplane airplane) {
+        return ResponseEntity.status(HttpStatus.OK).body(airplaneService.updateAirplane(airplane));
     }
 
 }
